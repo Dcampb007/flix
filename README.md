@@ -2,7 +2,7 @@
 
 **Name of your app** is a movies app using the [The Movie Database API](http://docs.themoviedb.apiary.io/#).
 
-Time spent: **X** hours spent in total
+Time spent: 5 hours spent in total
 
 ## User Stories
 
@@ -28,7 +28,7 @@ The following **additional** user stories are implemented:
 
 Please list two areas of the assignment you'd like to **discuss further with your peers** during the next class (examples include better ways to implement something, how to extend your app in certain ways, etc):
 
-1.
+1. I would like to know how to improve the search bar with the photos to change the UI. I think we need to talk about these things in class. 
 2.
 
 ## Video Walkthrough
@@ -42,6 +42,8 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 ## Notes
 
 Describe any challenges encountered while building the app.
+
+Although it was a walk though assignment, I was still confused on exactly what I was doing. I would like to talk about some of the tools and things used in this assignment in class. 
 
 ## License
 

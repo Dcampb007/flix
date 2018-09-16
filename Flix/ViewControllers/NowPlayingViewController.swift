@@ -27,6 +27,8 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UISearc
         tableView.insertSubview(refreshControl, at: 0)
         tableView.dataSource = self
         searchBar.delegate = self
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 50
         fetchMovies()
         // create a cancel action
         let retryAction = UIAlertAction(title: "retry", style: .default) { (action) in

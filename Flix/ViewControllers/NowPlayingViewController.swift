@@ -13,8 +13,8 @@ import PKHUD
 class NowPlayingViewController: UIViewController, UITableViewDataSource, UISearchBarDelegate {
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
-    var movies: [[String: Any]] = []
-    var filteredMovies: [[String: Any]] = []
+    var movies: [Movie] = []
+    var filteredMovies: [Movie] = []
     var refreshControl: UIRefreshControl!
     let alertController = UIAlertController(title: "Cannot Get Movies", message: "The internet connection appeas to be offline.", preferredStyle: .alert)
     
@@ -48,42 +48,27 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UISearc
        
     }
     func fetchMovies() {
-        let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed")!
-        let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
-        let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
-        let task = session.dataTask(with: request) { (data, response, error) in
-        // this will run when the network request returns
-        if let error = error {
-            self.present(self.alertController, animated: true) {
-                // optional code for what happens after the alert controller has finished presenting
-                print(error.localizedDescription)
+        MovieApiManager().nowPlayingMovies { (movies: [Movie]?, error: Error?) in
+            if let movies = movies {
+                self.movies = movies
+                self.filteredMovies = movies
+                self.tableView.reloadData()
+                self.refreshControl.endRefreshing()
             }
         }
-        else if let data = data {
-        let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
-        let movies = dataDictionary["results"] as! [[String: Any]]
-        self.movies = movies
-        self.filteredMovies = self.movies
-        self.tableView.reloadData()
-        self.refreshControl.endRefreshing()
-    
-        }
-        }
-        task.resume()
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return filteredMovies.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MovieCell", for:indexPath) as! MovieCell
-        let movie = filteredMovies[indexPath.row]
-        let title = movie["title"] as! String
-        let overview = movie["overview"] as! String
-        cell.titleLabel.text = title
-        cell.overviewLabel.text = overview
-        let posterPathString = movie["poster_path"] as! String
-        let posterUrl = URL(string: "https://image.tmdb.org/t/p/w500" + posterPathString)!
-        cell.posterImageView.af_setImage(withURL: posterUrl)
+        cell.movie = filteredMovies[indexPath.row]
+//        let title = movie.title
+//        let overview = movie.overview
+//        cell.titleLabel.text = title
+//        cell.overviewLabel.text = overview
+//        let posterUrl = movie.posterUrl!
+//        cell.posterImageView.af_setImage(withURL: posterUrl)
         return cell
     }
     
@@ -103,9 +88,9 @@ class NowPlayingViewController: UIViewController, UITableViewDataSource, UISearc
         // Use the filter method to iterate over all items in the data array
         // For each item, return true if the item should be included and false if the
         // item should NOT be included
-        filteredMovies = searchText.isEmpty ? movies : movies.filter { (item: [String:Any]) -> Bool in
+        filteredMovies = searchText.isEmpty ? movies : movies.filter { (item: Movie) -> Bool in
             // If dataItem matches the searchText, return true to include it
-            let title = item["title"] as! String
+            let title = item.title
             return title.range(of: searchText, options: .caseInsensitive, range: nil, locale: nil) != nil
         }
         
